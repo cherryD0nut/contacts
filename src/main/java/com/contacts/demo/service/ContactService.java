@@ -1,7 +1,7 @@
 package com.contacts.demo.service;
 
 
-import com.contacts.demo.dao.Contact;
+import com.contacts.demo.entity.Contact;
 import com.contacts.demo.dto.ContactDto;
 import com.contacts.demo.repository.ContactRepository;
 import jakarta.transaction.Transactional;

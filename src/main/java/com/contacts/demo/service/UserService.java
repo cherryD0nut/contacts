@@ -1,43 +1,46 @@
 package com.contacts.demo.service;
 
-import com.contacts.demo.mapper.UserMapper;
-import com.contacts.demo.dto.UserDto;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import lombok.RequiredArgsConstructor;
 
+import lombok.RequiredArgsConstructor;
+import com.contacts.demo.entity.User;
+import com.contacts.demo.dto.UserFormDto;
+import com.contacts.demo.repository.UserRepository;
 
 import java.util.List;
 
-@Service
-@Transactional
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
+
 @RequiredArgsConstructor
+@Service
 public class UserService {
 
-	private final UserMapper userMapper;
-	
-    public List<UserDto> getAllUsers() {
-        return userMapper.findAll();
+    private final UserRepository userRepository;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    
+    // 회원가입 시 id 중복 확인
+    private void validateDuplicateMember(String username) {
+        User user = userRepository.findByUsername(username);
+        if(user != null){
+            throw new IllegalStateException("이미 가입된 회원입니다.");
+        }
     }
 
-    public UserDto getUserById(String id) {
-        return userMapper.findById(id);
-    }
-
-    public void createUser(UserDto userDto) {
-        userMapper.insert(userDto);
-    }
-
-    public void updateUser(UserDto userDto) {
-        userMapper.update(userDto);
-    }
-
-    public void deleteUser(String id) {
-        userMapper.delete(id);
+    // 회원가입 로직
+    public Long saveUser(UserFormDto userFormDto) {
+        validateDuplicateMember(userFormDto.getUsername());
+        
+        return userRepository.save(User.builder()
+        		.username(userFormDto.getUsername())
+        		.password(bCryptPasswordEncoder.encode(userFormDto.getPassword()))
+        		.name(userFormDto.getName())
+        		.email(userFormDto.getEmail())
+        				.build()).getId();
     }
     
-
+    // 모든 유저 출력
+    public List<User> getAllUsers() {
+    	return userRepository.findAll();
+    }
     
-
-	
 }

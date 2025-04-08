@@ -1,5 +1,5 @@
 package com.contacts.demo.controller;
-import com.contacts.demo.dao.Contact;
+import com.contacts.demo.entity.Contact;
 import com.contacts.demo.dto.ContactDto;
 import com.contacts.demo.service.ContactService;
 

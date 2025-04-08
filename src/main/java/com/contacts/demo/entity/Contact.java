@@ -1,4 +1,4 @@
-package com.contacts.demo.dao;
+package com.contacts.demo.entity;
 
 import lombok.AccessLevel;
 import lombok.Getter;
