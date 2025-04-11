@@ -1,113 +1,124 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<!-- 사용자 스크립트 추가 -->
-<th:block layout:fragment="script">
-<script th:inline="javascript">
-	$(document).ready(function(){
-    	let message = [[${message}]];
-        if(message != null){
-          alert(message);
-    }
-</script>
-</th:block>
 <head>
     <meta charset="UTF-8">
-    <title>User List</title>
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-</head>
-<body>
-<div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2 class="text-center">연락처</h2>
-        <button type="button" class="btn btn-primary" style="background-color: black;" data-bs-toggle="modal" data-bs-target="#addContactModal">
-            새 연락처 추가
-        </button>
-    </div>
+    <title>연락처 목록</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', function () {
+            let message = [[${errorMessage}]];
+            if (message) {
+                alert(message);
+            }
 
-    <table class="table table-striped table-hover">
-        <thead class="table-dark">
-        <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Phone Number</th>
-            <th>Config</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="contact : ${contacts}">
-            <td th:text="${contact.name}"></td>
-            <td th:text="${contact.email}"></td>
-            <td th:text="${contact.phoneNo}"></td>
-            <td>
-                <form th:action="@{/contacts/delete/{id}(id=${contact.id})}" method="post"
-                      onsubmit="return confirm('정말 삭제할까요?');">
-                    <button type="submit">삭제</button>
-                </form>
-                
-                <!-- 수정 버튼 -->
-    			<button type="button"
-                	class="btn btn-secondary btn-sm mt-1"
-            	    data-bs-toggle="modal"
-                    data-bs-target="#editContactModal"
-                    th:attr="data-id=${contact.id}, data-name=${contact.name}, data-email=${contact.email}, data-phone=${contact.phoneNo}">수정
-                </button>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    // 수정 버튼 눌렀을 때 모달에 값 채워넣기
-document.addEventListener('DOMContentLoaded', function () {
-    const editModal = document.getElementById('editContactModal');
-    if (editModal) {
-        editModal.addEventListener('show.bs.modal', function (event) {
-            const button = event.relatedTarget;
-            const id = button.getAttribute('data-id');
-            const name = button.getAttribute('data-name');
-            const email = button.getAttribute('data-email');
-            const phone = button.getAttribute('data-phone');
+            const editModal = document.getElementById('editContactModal');
+            if (editModal) {
+                editModal.addEventListener('show.bs.modal', function (event) {
+                    const button = event.relatedTarget;
+                    const id = button.getAttribute('data-id');
+                    const name = button.getAttribute('data-name');
+                    const email = button.getAttribute('data-email');
+                    const phone = button.getAttribute('data-phone');
 
-            document.getElementById('edit-id').value = id;
-            document.getElementById('edit-name').textContent = name;
-            document.getElementById('edit-name-hidden').value = name; // 이거 중요
-            document.getElementById('edit-email').value = email;
-            document.getElementById('edit-phone').value = phone;
+                    document.getElementById('edit-id').value = id;
+                    document.getElementById('edit-name').textContent = name;
+                    document.getElementById('edit-name-hidden').value = name;
+                    document.getElementById('edit-email').value = email;
+                    document.getElementById('edit-phone').value = phone;
+                });
+            }
         });
-    }
-});
-</script>
-</body>
-<!-- 새 연락처 추가 모달 -->
+    </script>
+    <style>
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+
+      .gradient-custom {
+        background: linear-gradient(to right, rgba(106, 17, 203, 1), rgba(37, 117, 252, 1));
+        min-height: 100%;
+      }
+    </style>
+</head>
+<body class="gradient-custom">
+<!-- 헤더 -->
+<div th:replace="fragments/header :: header"></div>
+
+<!-- 본문 -->
+<div class="container py-5">
+    <div class="rounded shadow-sm p-4" style="background-color: rgba(255, 255, 255, 0.9);">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="mb-0">📇 연락처 목록</h2>
+            <button class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#addContactModal">
+                + 새 연락처 추가
+            </button>
+        </div>
+
+        <!-- 연락처 테이블 -->
+        <div class="table-responsive">
+            <table class="table table-hover align-middle text-center">
+                <thead class="table-dark">
+                    <tr>
+                        <th>이름</th>
+                        <th>이메일</th>
+                        <th>전화번호</th>
+                        <th>관리</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="contact : ${contacts}">
+                        <td th:text="${contact.name}"></td>
+                        <td th:text="${contact.email}"></td>
+                        <td th:text="${contact.phoneNo}"></td>
+                        <td>
+                            <div class="d-flex justify-content-center gap-2">
+                                <form th:action="@{/contacts/delete/{id}(id=${contact.id})}" method="post"
+                                      onsubmit="return confirm('정말 삭제할까요?');">
+                                    <button type="submit" class="btn btn-outline-danger btn-sm">삭제</button>
+                                </form>
+                                <button type="button"
+                                        class="btn btn-outline-secondary btn-sm"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#editContactModal"
+                                        th:attr="data-id=${contact.id}, data-name=${contact.name}, data-email=${contact.email}, data-phone=${contact.phoneNo}">
+                                    수정
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- 연락처 추가 모달 -->
 <div class="modal fade" id="addContactModal" tabindex="-1" aria-labelledby="addContactModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <form th:action="@{/contacts/add}" th:object="${contactDto}" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title">새 연락처 추가</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
                 <div class="modal-body">
                     <div class="mb-3">
                         <label for="name" class="form-label">이름</label>
-                        <input type="text" class="form-control" id="name" name="name"
-                               th:field="*{name}">
-                        <div class="text-danger" th:if="${#fields.hasErrors('name')}"
-                             th:errors="*{name}"></div>
+                        <input type="text" class="form-control" id="name" th:field="*{name}">
+                        <div class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
                     </div>
-
                     <div class="mb-3">
                         <label for="email" class="form-label">이메일</label>
-                        <input type="email" class="form-control" id="email" name="email"
-                               th:field="*{email}">
-                        <div class="text-danger" th:if="${#fields.hasErrors('email')}"
-                             th:errors="*{email}"></div>
+                        <input type="email" class="form-control" id="email" th:field="*{email}">
+                        <div class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
                     </div>
-
                     <div class="mb-3">
                         <label for="phoneNo" class="form-label">전화번호</label>
-                        <input type="text" class="form-control" id="phoneNo" name="phoneNo"
-                               th:field="*{phoneNo}">
-                        <div class="text-danger" th:if="${#fields.hasErrors('phoneNo')}"
-                             th:errors="*{phoneNo}"></div>
+                        <input type="text" class="form-control" id="phoneNo" th:field="*{phoneNo}">
+                        <div class="text-danger" th:if="${#fields.hasErrors('phoneNo')}" th:errors="*{phoneNo}"></div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -123,22 +134,25 @@ document.addEventListener('DOMContentLoaded', function () {
 <div class="modal fade" id="editContactModal" tabindex="-1" aria-labelledby="editContactModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form id="editForm" method="post" th:action="@{/contacts/update}">
-                <input type="hidden" name="id" id="edit-id"/>
+            <form th:action="@{/contacts/update}" method="post">
+                <input type="hidden" id="edit-id" name="id"/>
+                <div class="modal-header">
+                    <h5 class="modal-title">연락처 수정</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
                 <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label">이름</label>
-                        <!-- 이름은 수정 불가. 텍스트만 표시 -->
                         <p id="edit-name" class="form-control-plaintext"></p>
-                        <input type="hidden" name="name" id="edit-name-hidden">
+                        <input type="hidden" name="name" id="edit-name-hidden"/>
                     </div>
                     <div class="mb-3">
                         <label for="edit-email" class="form-label">이메일</label>
-                        <input type="email" class="form-control" id="edit-email" name="email">
+                        <input type="email" class="form-control" id="edit-email" name="email"/>
                     </div>
                     <div class="mb-3">
                         <label for="edit-phone" class="form-label">전화번호</label>
-                        <input type="text" class="form-control" id="edit-phone" name="phoneNo">
+                        <input type="text" class="form-control" id="edit-phone" name="phoneNo"/>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -149,6 +163,5 @@ document.addEventListener('DOMContentLoaded', function () {
         </div>
     </div>
 </div>
-
-
+</body>
 </html>

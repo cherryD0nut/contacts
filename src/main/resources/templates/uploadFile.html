@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div>
+  <div>
+    <h2>파일 업로드 하기</h2>
+  </div>
+  <h4>이미지 파일 업로드</h4>
+
+  <form th:action method="post" enctype="multipart/form-data">
+    <ul>
+      <li>파일명<input type="text" name="fileName"></li>
+      <li>파일<input type="file" name="file" ></li>
+    </ul>
+    <input type="submit"/>
+  </form>
+</div>
+</body>

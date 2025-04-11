@@ -28,8 +28,8 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http.authorizeHttpRequests(authorizeHttpRequestsCustomizer -> authorizeHttpRequestsCustomizer
-                        .requestMatchers("/css/**", "/js/**", "/img/**").permitAll()
-                        .requestMatchers("/", "/users/**", "/contacts/**", "/images/**").permitAll()
+                        .requestMatchers("/css/**", "/js/**", "/img/**","/images/**","/users/**").permitAll()
+                        .requestMatchers("/","/contacts/**").authenticated() // 로그인 필요
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 ).formLogin(formLoginCustomizer -> formLoginCustomizer

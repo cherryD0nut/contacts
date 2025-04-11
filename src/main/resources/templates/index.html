@@ -3,11 +3,11 @@
 
 <head>
 	<meta charset='UTF-8'>
-	<title>Thymeleaf Test Page</title>
+	<title>Home</title>
 </head>
 
 <body>
-	<h2>반갑습니다, <span style="color: #bada55;" th:text="${name}"></span>님!</h2>
+	<h2>반갑습니다, <span style="color: #bada55;" sec:authentication="name"></span>님!</h2>
 </body>
 
 </html>
