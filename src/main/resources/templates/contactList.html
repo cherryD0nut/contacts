@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang=ko xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>연락처 목록</title>
@@ -7,7 +7,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script th:inline="javascript">
         document.addEventListener('DOMContentLoaded', function () {
-            let message = [[${errorMessage}]];
+            let message = /*[[${message}]]*/ "";
             if (message) {
                 alert(message);
             }
@@ -31,16 +31,16 @@
         });
     </script>
     <style>
-      html, body {
-        height: 100%;
-        margin: 0;
-        padding: 0;
-      }
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
 
-      .gradient-custom {
-        background: linear-gradient(to right, rgba(106, 17, 203, 1), rgba(37, 117, 252, 1));
-        min-height: 100%;
-      }
+        .gradient-custom {
+            background: linear-gradient(to right, rgba(106, 17, 203, 1), rgba(37, 117, 252, 1));
+            min-height: 100%;
+        }
     </style>
 </head>
 <body class="gradient-custom">
@@ -61,37 +61,87 @@
         <div class="table-responsive">
             <table class="table table-hover align-middle text-center">
                 <thead class="table-dark">
-                    <tr>
-                        <th>이름</th>
-                        <th>이메일</th>
-                        <th>전화번호</th>
-                        <th>관리</th>
-                    </tr>
+                <tr>
+                    <th>이름</th>
+                    <th>이메일</th>
+                    <th>전화번호</th>
+                    <th>관리</th>
+                </tr>
                 </thead>
                 <tbody>
-                    <tr th:each="contact : ${contacts}">
-                        <td th:text="${contact.name}"></td>
-                        <td th:text="${contact.email}"></td>
-                        <td th:text="${contact.phoneNo}"></td>
-                        <td>
-                            <div class="d-flex justify-content-center gap-2">
-                                <form th:action="@{/contacts/delete/{id}(id=${contact.id})}" method="post"
-                                      onsubmit="return confirm('정말 삭제할까요?');">
-                                    <button type="submit" class="btn btn-outline-danger btn-sm">삭제</button>
-                                </form>
-                                <button type="button"
-                                        class="btn btn-outline-secondary btn-sm"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#editContactModal"
-                                        th:attr="data-id=${contact.id}, data-name=${contact.name}, data-email=${contact.email}, data-phone=${contact.phoneNo}">
-                                    수정
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
+                <tr th:each="contact : ${contacts}">
+                    <td th:text="${contact.name}"></td>
+                    <td th:text="${contact.email}"></td>
+                    <td th:text="${contact.phoneNo}"></td>
+                    <td>
+                        <div class="d-flex justify-content-center gap-2">
+                            <form th:action="@{/contacts/delete/{id}(id=${contact.id})}" method="post"
+                                  onsubmit="return confirm('정말 삭제할까요?');">
+                                <button type="submit" class="btn btn-outline-danger btn-sm">삭제</button>
+                            </form>
+                            <button type="button"
+                                    class="btn btn-outline-secondary btn-sm"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#editContactModal"
+                                    th:attr="data-id=${contact.id}, data-name=${contact.name}, data-email=${contact.email}, data-phone=${contact.phoneNo}">
+                                수정
+                            </button>
+                        </div>
+                    </td>
+                </tr>
                 </tbody>
             </table>
         </div>
+
+        <!-- Pagination -->
+        <div class="d-flex justify-content-center mt-4">
+            <nav aria-label="Page navigation">
+                <ul class="pagination mb-0"
+                    th:with="
+                current=${contacts.number},
+                total=${contacts.totalPages},
+                start=${current - 2 >= 0 ? current - 2 : 0},
+                end=${current + 2 < total ? current + 2 : total - 1}
+            ">
+                    <!-- First Page -->
+                    <li class="page-item" th:classappend="${contacts.first} ? 'disabled'">
+                        <a class="page-link" th:href="@{/contacts(page=0, size=${contacts.size})}" aria-label="First">
+                            <span aria-hidden="true">&laquo;&laquo;</span>
+                        </a>
+                    </li>
+
+                    <!-- Previous Page -->
+                    <li class="page-item" th:classappend="${contacts.first} ? 'disabled'">
+                        <a class="page-link" th:href="@{/contacts(page=${contacts.number - 1}, size=${contacts.size})}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+
+                    <!-- Page Numbers: 5 max -->
+                    <li class="page-item"
+                        th:each="i : ${#numbers.sequence(start, end)}"
+                        th:classappend="${contacts.number == i} ? 'active'">
+                        <a class="page-link" th:href="@{/contacts(page=${i}, size=${contacts.size})}" th:text="${i + 1}"></a>
+                    </li>
+
+                    <!-- Next Page -->
+                    <li class="page-item" th:classappend="${contacts.last} ? 'disabled'">
+                        <a class="page-link" th:href="@{/contacts(page=${contacts.number + 1}, size=${contacts.size})}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+
+                    <!-- Last Page -->
+                    <li class="page-item" th:classappend="${contacts.last} ? 'disabled'">
+                        <a class="page-link" th:href="@{/contacts(page=${contacts.totalPages - 1}, size=${contacts.size})}" aria-label="Last">
+                            <span aria-hidden="true">&raquo;&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+
     </div>
 </div>
 

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 @Controller
-public class fileController {
+public class FileController {
 	
 	
 	// 파일 저장 경로

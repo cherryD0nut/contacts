@@ -3,10 +3,14 @@ package com.contacts.demo.service;
 
 import com.contacts.demo.entity.Contact;
 import com.contacts.demo.dto.ContactDto;
+import com.contacts.demo.dto.SearchDto;
 import com.contacts.demo.repository.ContactRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,9 +24,21 @@ public class ContactService {
 
     private final ContactRepository contactRepository;
 
+    // entity -> dto
+    private ContactDto convertToDto(Contact contact) {
+        ContactDto dto = new ContactDto();
+        dto.setId(contact.getId());
+        dto.setName(contact.getName());
+        dto.setEmail(contact.getEmail());
+        dto.setPhoneNo(contact.getPhoneNo());
+        return dto;
+    }
+    
+    
     // 모든 연락처 출력
-    public List<Contact> getAllContacts(){
-        return contactRepository.findAll();
+    public Page<ContactDto> getAllContacts(Pageable pageable){
+        Page<Contact> page =  contactRepository.findAll(pageable);
+        return page.map(this::convertToDto);
     }
 
     // 연락처 삭제

@@ -1,66 +1,68 @@
 package com.contacts.demo.controller;
-import com.contacts.demo.entity.Contact;
+
 import com.contacts.demo.dto.ContactDto;
 import com.contacts.demo.service.ContactService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.List;
-
 @Controller
 @RequiredArgsConstructor
-public class contactController {
+public class ContactController {
 
     private final ContactService contactService;
 
-
-    // 모든 연락처 출력
     @GetMapping("/contacts")
-    public String getContacts(Model model){
-        List<Contact> contacts = contactService.getAllContacts();
-        model.addAttribute("contacts",contacts);
-        model.addAttribute("contactDto", new ContactDto());
+    public String getContacts(Model model,
+                              @RequestParam(defaultValue = "0") int page,
+                              @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        Page<ContactDto> contactPage = contactService.getAllContacts(pageable);
+
+        model.addAttribute("contacts", contactPage);
+
+        // 수정된 부분: contactDto가 없으면 빈 객체로 추가
+        if (!model.containsAttribute("contactDto")) {
+            model.addAttribute("contactDto", new ContactDto());
+        }
+
         return "contactList";
     }
 
-    // 연락처 삭제
     @PostMapping("/contacts/delete/{id}")
-    public String deleteContact(@PathVariable(name="id") Long id, Model model) {
-
+    public String deleteContact(@PathVariable(name = "id") Long id, RedirectAttributes redirectAttributes) {
         try {
             contactService.deleteById(id);
+            redirectAttributes.addFlashAttribute("message", "삭제되었습니다.");
         } catch (Exception e) {
-            model.addAttribute("message", "삭제 중 에러가 발생하였습니다.");
+            redirectAttributes.addFlashAttribute("message", "삭제 중 에러가 발생했습니다.");
         }
         return "redirect:/contacts";
-
     }
 
-    // 연락처 생성
     @PostMapping("/contacts/add")
-    public String addContact(@Valid @ModelAttribute ContactDto contactDto,
+    public String addContact(@Valid @ModelAttribute("contactDto") ContactDto contactDto,
                              BindingResult bindingResult,
-                             RedirectAttributes redirectAttributes,
-                             Model model) {
+                             RedirectAttributes redirectAttributes) {
 
-    	System.out.println(contactDto.getName());
-    	System.out.println(contactDto.getEmail());
-    	System.out.println(contactDto.getPhoneNo());
-    	
         if (bindingResult.hasErrors()) {
-            // 에러 메시지 다시 보여주고 모달 유지
-            model.addAttribute("contacts", contactService.getAllContacts());
-            model.addAttribute("openModal", true); // 모달 다시 열기 위한 플래그
-            return "contacts";
+            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.contactDto", bindingResult);
+            redirectAttributes.addFlashAttribute("contactDto", contactDto);
+            redirectAttributes.addFlashAttribute("openModal", true);
+            return "redirect:/contacts";
         }
 
-        try{
+        try {
             contactService.saveContact(contactDto);
             redirectAttributes.addFlashAttribute("message", "연락처가 추가되었습니다.");
         } catch (Exception e) {
@@ -69,7 +71,6 @@ public class contactController {
         return "redirect:/contacts";
     }
 
-    // 연락처 수정
     @PostMapping("/contacts/update")
     public String updateContact(@ModelAttribute ContactDto contactDto,
                                 RedirectAttributes redirectAttributes) {
