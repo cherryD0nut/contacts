@@ -1,0 +1,10 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.gradient-custom {
+    background: linear-gradient(to right, rgba(106, 17, 203, 1), rgba(37, 117, 252, 1));
+    min-height: 100%;
+}

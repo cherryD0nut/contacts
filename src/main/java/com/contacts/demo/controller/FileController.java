@@ -2,6 +2,7 @@ package com.contacts.demo.controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.UUID;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,26 +15,36 @@ public class FileController {
 	
 	
 	// 파일 저장 경로
-    private final String uploadDir = "C:\\Users\\nigos";
+    private final String uploadDir = "D:\\upload\\";
 
     @GetMapping("/upload")
     public String upload() {
-        return "uploadFile";
+        return "profile";
     }
 
     @PostMapping("/upload")
-    public String form(@RequestParam String fileName,
-                       @RequestParam MultipartFile file) throws IOException {
+    public String form(@RequestParam MultipartFile file) throws IOException {
 
-    	System.out.println("fileName: " + fileName);
-    	
-        if (!file.isEmpty()) {
-            String filename = fileName;
+        // 원본 파일명과 저장할 파일명
+        String originalName = file.getOriginalFilename();
+        String uuid = UUID.randomUUID().toString().replace("-", "");
 
-            String fullPath = uploadDir + filename;
-            file.transferTo(new File(fullPath));
+        try {
+            String extension = originalName.substring(originalName.lastIndexOf("."));
+            String fileName = uuid + extension;
+
+            if (!file.isEmpty()) {
+                String fullPath = uploadDir + fileName;
+                file.transferTo(new File(fullPath));
+
+                System.out.println(fullPath);
+            }
+
+        } catch (NullPointerException e) {
+            throw new NullPointerException("No such file or directory");
         }
-        return "uploadFile";
+
+        return "profile";
     }
 
 }
