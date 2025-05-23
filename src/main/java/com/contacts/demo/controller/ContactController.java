@@ -16,6 +16,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Controller
 @RequiredArgsConstructor
 public class ContactController {
@@ -40,35 +43,31 @@ public class ContactController {
     }
 
     @PostMapping("/contacts/delete/{id}")
-    public String deleteContact(@PathVariable(name = "id") Long id, RedirectAttributes redirectAttributes) {
+    @ResponseBody
+    public Map<String, Object> deleteContact(@PathVariable(name = "id") Long id) {
+        Map<String, Object> response = new HashMap<>();
         try {
             contactService.deleteById(id);
-            redirectAttributes.addFlashAttribute("message", "삭제되었습니다.");
+            response.put("success", true);
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("message", "삭제 중 에러가 발생했습니다.");
+            response.put("error", e.getMessage());
         }
-        return "redirect:/contacts";
+        return response;
     }
 
     @PostMapping("/contacts/add")
-    public String addContact(@Valid @ModelAttribute("contactDto") ContactDto contactDto,
-                             BindingResult bindingResult,
-                             RedirectAttributes redirectAttributes) {
-
-        if (bindingResult.hasErrors()) {
-            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.contactDto", bindingResult);
-            redirectAttributes.addFlashAttribute("contactDto", contactDto);
-            redirectAttributes.addFlashAttribute("openModal", true);
-            return "redirect:/contacts";
-        }
+    @ResponseBody
+    public Map<String, Object> addContact(@Valid @ModelAttribute("contactDto") ContactDto contactDto,
+                             BindingResult bindingResult) {
+        Map<String, Object> response = new HashMap<>();
 
         try {
             contactService.saveContact(contactDto);
-            redirectAttributes.addFlashAttribute("message", "연락처가 추가되었습니다.");
+            response.put("success", true);
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("message", "생성에 실패했습니다.");
+            response.put("error", e.getMessage());
         }
-        return "redirect:/contacts";
+        return response;
     }
 
     @PostMapping("/contacts/update")

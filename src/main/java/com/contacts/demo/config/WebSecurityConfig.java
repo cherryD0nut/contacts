@@ -37,13 +37,18 @@ public class WebSecurityConfig {
                         .anyRequest().authenticated()
                 ).formLogin(formLoginCustomizer -> formLoginCustomizer
                         .loginPage("/users/login")    //로그인 페이지 URL
-                        .defaultSuccessUrl("/contacts", true) //로그인 성공 시 이동할 URL
+                        .defaultSuccessUrl("/profile/", true) //로그인 성공 시 이동할 URL
                         .usernameParameter("username") //로그인에 사용할 파라미터 설정
                         .failureUrl("/users/login/error")
                 ).logout( logoutCustomizer -> logoutCustomizer
                         .logoutRequestMatcher(new AntPathRequestMatcher("/users/logout"))
                         .logoutSuccessUrl("/")
 
+                ).sessionManagement((session) -> session
+                    .sessionFixation().migrateSession()     // 세션 고정 공격 방지
+                    .maximumSessions(2)                     // 최대 세션 수
+                    .maxSessionsPreventsLogin(false)        // 기존 세션 만료시키고 새 로그인 허용
+                    .expiredUrl("/session-expired")         // 세션 만료 시 이동할 URL
                 )
                 .build();
     }

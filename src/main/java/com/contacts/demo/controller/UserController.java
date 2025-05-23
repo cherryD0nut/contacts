@@ -4,12 +4,16 @@ import com.contacts.demo.dto.UserFormDto;
 import com.contacts.demo.entity.User;
 import com.contacts.demo.service.UserService;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 
+import java.security.Principal;
 import java.util.List;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -24,6 +28,7 @@ public class UserController {
 	
 	private final UserService userService;
     private final PasswordEncoder passwordEncoder;
+
 	
 	// 모든 유저 목록 출력
     @GetMapping("/all")
@@ -63,7 +68,11 @@ public class UserController {
     }
     
     @GetMapping("/login")
-    public String loginUser(){
+    public String loginUser(HttpServletRequest request) {
+
+        // getSession()은 세션이 있으면 있는 세션을 반환하고, 없으면 신규 세션을 생성한다
+        HttpSession session = request.getSession();
+
         return "user/loginForm";
     }
 

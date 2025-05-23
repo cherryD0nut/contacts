@@ -2,8 +2,11 @@ package com.contacts.demo.controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.Principal;
 import java.util.UUID;
 
+import com.contacts.demo.service.FileService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,44 +14,34 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+@RequiredArgsConstructor
 @Controller
 @RequestMapping("/profile")
 public class FileController {
 	
-	
-	// 파일 저장 경로
-    private final String uploadDir = "C:\\Users\\judi0\\Desktop\\Projects\\upload\\";
+    private final FileService fileService;
 
-    @GetMapping("/upload")
-    public String upload() {
+    @GetMapping("/")
+    public String upload(Principal principal) {
+        System.out.println("principal name: " + principal.getName());
+
         return "profile";
     }
 
     @PostMapping("/upload")
-    public String form(@RequestParam("photoInput") MultipartFile file) throws IOException {
-
-        // 원본 파일명과 저장할 파일명
-        String originalName = file.getOriginalFilename();
-        String uuid = UUID.randomUUID().toString().replace("-", "");
-
-
-        try {
-            String extension = originalName.substring(originalName.lastIndexOf("."));
-            String fileName = uuid + extension;
-            System.out.println("fileName: " + fileName);
-
-            if (!file.isEmpty()) {
-                String fullPath = uploadDir + fileName;
-                file.transferTo(new File(fullPath));
-
-                System.out.println(fullPath);
-            }
-
-        } catch (NullPointerException e) {
-            throw new NullPointerException("No such file or directory");
+    public String form(@RequestParam("photoInput") MultipartFile file, Principal principal) throws IOException {
+        String username = principal.getName();
+        if (!file.isEmpty()) {
+            fileService.saveProfileFile(file, username);
         }
-
         return "profile";
     }
 
+    @GetMapping("/delete")
+    public String delete(Principal principal) {
+        System.out.println("principal name: " + principal.getName());
+
+
+        return "profile";
+    }
 }

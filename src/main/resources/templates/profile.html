@@ -17,7 +17,7 @@
     <div class="profile-card">
         <div class="mb-3 fs-4"><strong>프로필 등록</strong></div>
         <div style="display: flex; justify-content: center;">
-            <div class="preview-box" id="preview-box">미리보기</div>
+            <div class="preview-box" id="preview-box" data-bs-toggle="modal" data-bs-target="#editProfileModal">미리보기</div>
         </div>
         <form id="profileForm" enctype="multipart/form-data">
             <input type="file" id="photoInput" name="photoInput" accept="image/*" style="display: none;">
@@ -26,9 +26,6 @@
                 <div class="mb-3">
                     <label>Id : <span sec:authentication="name"></span></label>
 
-                </div>
-                <div class="mb-3">
-                    <label>닉네임 : 미죽희 </label>
                 </div>
             </div>
 
@@ -47,9 +44,9 @@
                 <h5 class="modal-title w-100 text-center" id="changeProfileModalLabel">프로필 사진 변경</h5>
             </div>
             <div class="modal-body d-flex flex-column p-0">
-                <button type="button" class="btn btn-link text-primary py-3 border-top border-bottom" id="uploadPhotoBtn">사진 업로드</button>
-                <button type="button" class="btn btn-link text-danger py-3 border-bottom" id="deletePhotoBtn">현재 사진 삭제</button>
-                <button type="button" class="btn btn-link text-white py-3" data-bs-dismiss="modal">취소</button>
+                <button type="button" class="btn text-primary py-3 border-top border-bottom" id="uploadPhotoBtn">사진 업로드</button>
+                <button type="button" class="btn text-danger py-3 border-bottom" id="deletePhotoBtn">현재 사진 삭제</button>
+                <button type="button" class="btn text-white py-3" data-bs-dismiss="modal" id="cancelBtn">취소</button>
             </div>
         </div>
     </div>

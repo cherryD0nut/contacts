@@ -30,6 +30,6 @@ public class Contact {
     private String email;
 
     @Column(nullable = false)
-    private String phoneNo;
+    private int phoneNo;
 
 }

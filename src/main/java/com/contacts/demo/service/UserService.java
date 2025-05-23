@@ -7,6 +7,7 @@ import com.contacts.demo.dto.UserFormDto;
 import com.contacts.demo.repository.UserRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -20,8 +21,8 @@ public class UserService {
     
     // 회원가입 시 id 중복 확인
     private void validateDuplicateMember(String username) {
-        User user = userRepository.findByUsername(username);
-        if(user != null){
+        Optional<User> userOptional = userRepository.findByUsername(username);
+        if(userOptional != null && userOptional.isPresent()) {
             throw new IllegalStateException("이미 가입된 회원입니다.");
         }
     }

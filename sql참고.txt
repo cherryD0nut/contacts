@@ -2,11 +2,7 @@ insert into contact (name, email, phone_no) values ("윤항영","karis0570@gmail
 
 insert into contact (name, email, phone_no) values  ("이밍영","asdlfk2@gmail.com","010-4590-2349");
 
-insert into contact (name, email, phone_no) values ("김귝석","honghong@naver.com","010-3485-3832"); 
-
-
-
-SELECT * FROMSELECT * FROM users;
+insert into contact (name, email, phone_no) values ("김귝석","honghong@naver.com","010-3485-3832");
 
 CREATE TABLE users (
 	id BIGINT AUTO_INCREMENT,
@@ -17,22 +13,37 @@ CREATE TABLE users (
 	PRIMARY KEY(id)
 	);
 	
+ALTER DATABASE test CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+ALTER TABLE users CONVERT TO CHARACTER SET utf8mb4 COLLATE UTF8MB4_UNICODE_CI;
+ALTER TABLE contact CONVERT TO CHARACTER SET utf8mb4 COLLATE UTF8MB4_UNICODE_CI;
+ALTER TABLE files CONVERT TO CHARACTER SET utf8mb4 COLLATE UTF8MB4_UNICODE_CI;
+ALTER TABLE files ADD CONSTRAINT `fk_user_id` FOREIGN KEY (user_id) REFERENCES users (id);
+
+
+
+INSERT INTO users (username, PASSWORD, NAME, email)  VALUES ("user1","pwpw1","홍길동","user1@naver.com");
+
+ALTER TABLE your_table_name ADD CONSTRAINT unique_constraint_name UNIQUE (your_column_name);
+
+ALTER TABLE users ADD COLUMN role VARCHAR(100) DEFAULT 'user';
 	
 	
-	
-	ALTER DATABASE test CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-	ALTER TABLE your_table_name CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-	INSERT INTO users (username, PASSWORD, NAME, email)  VALUES ("user1","pwpw1","홍길동","user1@naver.com");
-	
-	ALTER TABLE your_table_name
-ADD CONSTRAINT unique_constraint_name UNIQUE (your_column_name);
-	ALTER TABLE users ADD COLUMN role VARCHAR(100) DEFAULT 'user';
-	
-	
-	CREATE TABLE contact (
+CREATE TABLE contact (
   id INT AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(100),
   email VARCHAR(100),
   phone_no VARCHAR(20)
 );
-	
+
+CREATE TABLE files (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    file_name VARCHAR(255) NOT NULL,
+    file_path VARCHAR(500) NOT NULL,
+    file_size BIGINT,
+    file_category VARCHAR(100),
+    mime_type VARCHAR(100),
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+
